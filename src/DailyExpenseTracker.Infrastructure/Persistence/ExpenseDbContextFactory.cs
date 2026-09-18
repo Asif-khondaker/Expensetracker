@@ -20,14 +20,16 @@ public sealed class ExpenseDbContextFactory : IDesignTimeDbContextFactory<Expens
             .SetBasePath(basePath)
             .AddJsonFile("appsettings.json", optional: true)
             .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddUserSecrets("ebbb9a83-208c-4592-843e-eaecb9525780")
             .Build();
 
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            // Standard fallback schema configuration during migrations generation
-            connectionString = "server=localhost;database=DailyExpenseTrackerDb;user=root;password=;";
+            throw new InvalidOperationException(
+                "Connection string 'DefaultConnection' was not found. Configure it securely using .NET User Secrets: " +
+                "dotnet user-secrets set \"ConnectionStrings:DefaultConnection\" \"<your-connection-string>\" --project src/DailyExpenseTracker.Web/DailyExpenseTracker.Web.csproj");
         }
 
         var optionsBuilder = new DbContextOptionsBuilder<ExpenseDbContext>();
