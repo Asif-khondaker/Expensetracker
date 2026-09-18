@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DailyExpenseTracker.Application/DailyExpenseTracker.Application.csproj" />
+    <Project Path="src/DailyExpenseTracker.Domain/DailyExpenseTracker.Domain.csproj" />
+    <Project Path="src/DailyExpenseTracker.Infrastructure/DailyExpenseTracker.Infrastructure.csproj" />
+    <Project Path="src/DailyExpenseTracker.Web/DailyExpenseTracker.Web.csproj" />
+  </Folder>
+</Solution>
