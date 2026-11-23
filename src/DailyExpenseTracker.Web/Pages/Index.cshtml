@@ -1,10 +1,19 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-4">
+    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm text-center">
+        <h1 class="display-5 fw-bold text-primary">Daily Expense Tracker</h1>
+        <p class="fs-5 text-muted col-md-8 mx-auto">
+            Easily record, organize, and monitor your personal daily expenses with simple and secure tracking.
+        </p>
+        <div class="mt-4">
+            <a asp-page="/Expenses/Create" class="btn btn-primary btn-lg px-4 shadow">
+                <i class="bi bi-plus-circle me-1"></i> Entry Expense
+            </a>
+        </div>
+    </div>
 </div>

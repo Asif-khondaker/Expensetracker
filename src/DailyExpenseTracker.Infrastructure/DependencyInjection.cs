@@ -1,4 +1,7 @@
+using DailyExpenseTracker.Application.Categories.Interfaces;
+using DailyExpenseTracker.Application.Expenses.Interfaces;
 using DailyExpenseTracker.Infrastructure.Persistence;
+using DailyExpenseTracker.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +29,9 @@ public static class DependencyInjection
                     });
             }
         });
+
+        services.AddScoped<IExpenseRepository, ExpenseRepository>();
+        services.AddScoped<IExpenseCategoryRepository, ExpenseCategoryRepository>();
 
         return services;
     }

@@ -5,4 +5,7 @@
     <Project Path="src/DailyExpenseTracker.Infrastructure/DailyExpenseTracker.Infrastructure.csproj" />
     <Project Path="src/DailyExpenseTracker.Web/DailyExpenseTracker.Web.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DailyExpenseTracker.Application.Tests/DailyExpenseTracker.Application.Tests.csproj" />
+  </Folder>
 </Solution>
