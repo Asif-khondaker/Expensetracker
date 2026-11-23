@@ -4,16 +4,96 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container py-4">
-    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm text-center">
-        <h1 class="display-5 fw-bold text-primary">Daily Expense Tracker</h1>
-        <p class="fs-5 text-muted col-md-8 mx-auto">
-            Easily record, organize, and monitor your personal daily expenses with simple and secure tracking.
-        </p>
-        <div class="mt-4">
-            <a asp-page="/Expenses/Create" class="btn btn-primary btn-lg px-4 shadow">
-                <i class="bi bi-plus-circle me-1"></i> Entry Expense
-            </a>
+<!-- Content Header -->
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <h3 class="mb-0 fw-bold">Dashboard</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end mb-0">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="app-content">
+    <div class="container-fluid">
+        <!-- Quick Stats / Action Boxes -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon text-bg-primary shadow-sm">
+                        <i class="bi bi-plus-circle-fill"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Quick Entry</span>
+                        <span class="info-box-number">Record Expense</span>
+                        <a asp-page="/Expenses/Create" class="btn btn-outline-primary btn-sm mt-1">
+                            Add New &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon text-bg-success shadow-sm">
+                        <i class="bi bi-receipt"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Records</span>
+                        <span class="info-box-number">View &amp; Edit</span>
+                        <a asp-page="/Expenses/Index" class="btn btn-outline-success btn-sm mt-1">
+                            View All &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon text-bg-warning shadow-sm">
+                        <i class="bi bi-currency-exchange"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Currency</span>
+                        <span class="info-box-number">BDT (৳)</span>
+                        <span class="badge text-bg-secondary mt-1">Standard BDT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Welcome Banner Card -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-primary card-outline shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title fw-bold mb-0">
+                            <i class="bi bi-wallet2 me-2 text-primary"></i>Daily Expense Tracker
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text text-muted fs-6">
+                            Welcome to your personal Daily Expense Tracker built with <strong>.NET 10</strong>, <strong>Clean Architecture</strong>, <strong>MySQL</strong>, and <strong>AdminLTE 4</strong>.
+                        </p>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <a asp-page="/Expenses/Create" class="btn btn-primary px-4 fw-semibold">
+                                <i class="bi bi-plus-lg me-1"></i> Entry Expense
+                            </a>
+                            <a asp-page="/Expenses/Index" class="btn btn-outline-secondary px-4 fw-semibold">
+                                <i class="bi bi-table me-1"></i> View All Expenses
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
