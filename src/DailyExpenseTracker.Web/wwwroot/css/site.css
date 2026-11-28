@@ -29,3 +29,64 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* Category badge colors */
+.badge-cat-food {
+  background-color: #e67e22;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}
+
+.badge-cat-transport {
+  background-color: #0d6efd;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}
+
+.badge-cat-shopping {
+  background-color: #d63384;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}
+
+.badge-cat-bills {
+  background-color: #ffc107;
+  --bs-badge-color: #212529;
+  color: #212529;
+}
+
+.badge-cat-medical {
+  background-color: #dc3545;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}
+
+.badge-cat-education {
+  background-color: #4f46e5;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}
+
+.badge-cat-entertainment {
+  background-color: #8b5cf6;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}
+
+.badge-cat-rent {
+  background-color: #0d9488;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}
+
+.badge-cat-family {
+  background-color: #198754;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}
+
+.badge-cat-other {
+  background-color: #6c757d;
+  --bs-badge-color: #ffffff;
+  color: #ffffff;
+}

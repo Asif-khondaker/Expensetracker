@@ -1,0 +1,81 @@
+@page "{id:int?}"
+@model DailyExpenseTracker.Web.Pages.Expenses.DeleteModel
+@{
+    ViewData["Title"] = $"Delete Expense #{Model.Expense?.Id}";
+}
+
+<!-- Content Header -->
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <h3 class="mb-0 fw-bold">Delete Expense #@Model.Expense?.Id</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end mb-0">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/Expenses/Index">Expenses</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Delete #@Model.Expense?.Id</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="app-content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+                @if (Model.Expense != null)
+                {
+                    <div class="card card-danger card-outline shadow-sm mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title fw-bold mb-0">
+                                <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Confirm Expense Deletion
+                            </h5>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                <i class="bi bi-exclamation-circle-fill fs-5 me-2"></i>
+                                <div>Are you sure you want to permanently delete this expense? This action cannot be undone.</div>
+                            </div>
+
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4 text-muted">Date</dt>
+                                <dd class="col-sm-8 fw-semibold">@Model.Expense.ExpenseDate.ToString("yyyy-MM-dd")</dd>
+
+                                <dt class="col-sm-4 text-muted">Category</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge text-bg-secondary fw-normal px-2 py-1">@Model.Expense.CategoryName</span>
+                                </dd>
+
+                                <dt class="col-sm-4 text-muted">Payment Method</dt>
+                                <dd class="col-sm-8">@Model.Expense.PaymentMethod</dd>
+
+                                <dt class="col-sm-4 text-muted">Amount</dt>
+                                <dd class="col-sm-8 fw-bold text-danger">৳ @Model.Expense.Amount.ToString("N2")</dd>
+
+                                <dt class="col-sm-4 text-muted">Description</dt>
+                                <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.Expense.Description) ? "—" : Model.Expense.Description)</dd>
+                            </dl>
+                        </div>
+
+                        <form method="post" asp-page="/Expenses/Delete">
+                            <input type="hidden" name="id" value="@Model.Expense.Id" />
+                            <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3 px-4">
+                                <a asp-page="/Expenses/Index" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-danger px-4 fw-semibold shadow-sm">
+                                    <i class="bi bi-trash me-1"></i> Confirm Delete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -98,6 +98,24 @@ public sealed class ExpenseService : IExpenseService
         await _expenseRepository.UpdateAsync(expense, cancellationToken);
     }
 
+    public async Task DeleteExpenseAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        if (id <= 0)
+        {
+            throw new ValidationException(nameof(id), "Invalid expense ID.");
+        }
+
+        var expense = await _expenseRepository.GetTrackingByIdAsync(id, cancellationToken);
+        if (expense == null)
+        {
+            throw new ValidationException(string.Empty, "Expense not found.");
+        }
+
+        await _expenseRepository.DeleteAsync(expense, cancellationToken);
+    }
+
     public async Task<IReadOnlyList<ExpenseListItemDto>> GetExpensesAsync(
         CancellationToken cancellationToken = default)
     {
@@ -113,6 +131,52 @@ public sealed class ExpenseService : IExpenseService
             PaymentMethod = e.PaymentMethod,
             Description = e.Description
         }).ToList();
+    }
+
+    public Task<ExpensePageDto> GetExpensesPageAsync(
+        DateTime? fromDate, DateTime? toDate, int? categoryId, int pageNumber, int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateDateRange(fromDate, toDate);
+        if (categoryId is <= 0)
+            throw new ValidationException(nameof(categoryId), "Category must be a valid category.");
+        if (pageNumber < 1)
+            pageNumber = 1;
+        if (pageSize < 1 || pageSize > 100)
+            pageSize = 20;
+
+        return _expenseRepository.GetPageAsync(fromDate?.Date, toDate?.Date, categoryId, pageNumber, pageSize, cancellationToken);
+    }
+
+    public async Task<DashboardSummaryDto> GetDashboardSummaryAsync(
+        DateTime fromDate, DateTime toDate, CancellationToken cancellationToken = default)
+    {
+        ValidateDateRange(fromDate, toDate);
+        var from = fromDate.Date;
+        var to = toDate.Date;
+        var today = DateTime.Today;
+        var monthStart = new DateTime(today.Year, today.Month, 1);
+
+        return new DashboardSummaryDto
+        {
+            TodayTotal = await _expenseRepository.GetTotalAsync(today, today, cancellationToken),
+            MonthTotal = await _expenseRepository.GetTotalAsync(monthStart, today, cancellationToken),
+            SelectedPeriodTotal = await _expenseRepository.GetTotalAsync(from, to, cancellationToken),
+            FromDate = from,
+            ToDate = to,
+            CategoryTotals = await _expenseRepository.GetCategoryTotalsAsync(from, to, cancellationToken),
+            RecentExpenses = await _expenseRepository.GetRecentAsync(5, cancellationToken)
+        };
+    }
+
+    private static void ValidateDateRange(DateTime? fromDate, DateTime? toDate)
+    {
+        if (!fromDate.HasValue || !toDate.HasValue)
+            return;
+        if (fromDate.Value.Date > toDate!.Value.Date)
+            throw new ValidationException("DateRange", "Start date must be on or before end date.");
+        if ((toDate.Value.Date - fromDate.Value.Date).TotalDays > 3660)
+            throw new ValidationException("DateRange", "Date range cannot exceed 10 years.");
     }
 
     private static void ValidateExpenseData(decimal amount, PaymentMethod paymentMethod, string? description)

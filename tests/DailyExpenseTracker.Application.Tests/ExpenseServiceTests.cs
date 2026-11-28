@@ -41,9 +41,51 @@ public class ExpenseServiceTests
             return Task.CompletedTask;
         }
 
+        public Task DeleteAsync(Expense expense, CancellationToken cancellationToken = default)
+        {
+            SavedExpenses.Remove(expense);
+            return Task.CompletedTask;
+        }
+
         public Task<IReadOnlyList<Expense>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return Task.FromResult<IReadOnlyList<Expense>>(SavedExpenses.AsReadOnly());
+        }
+
+        public Task<ExpensePageDto> GetPageAsync(DateTime? fromDate, DateTime? toDate, int? categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var query = SavedExpenses.AsEnumerable();
+            if (fromDate.HasValue) query = query.Where(e => e.ExpenseDate >= fromDate.Value.Date);
+            if (toDate.HasValue) query = query.Where(e => e.ExpenseDate <= toDate.Value.Date);
+            if (categoryId.HasValue) query = query.Where(e => e.CategoryId == categoryId.Value);
+            var matching = query.OrderByDescending(e => e.ExpenseDate).ThenByDescending(e => e.Id).ToList();
+            var totalPages = (int)Math.Ceiling(matching.Count / (double)pageSize);
+            var safePage = totalPages == 0 ? 1 : Math.Clamp(pageNumber, 1, totalPages);
+            var items = matching.Skip((safePage - 1) * pageSize).Take(pageSize).Select(e => new ExpenseListItemDto
+            {
+                Id = e.Id, ExpenseDate = e.ExpenseDate, Amount = e.Amount, CategoryId = e.CategoryId,
+                CategoryName = e.Category?.Name ?? string.Empty, PaymentMethod = e.PaymentMethod, Description = e.Description
+            }).ToList();
+            return Task.FromResult(new ExpensePageDto { Items = items, TotalCount = matching.Count, PageNumber = safePage });
+        }
+
+        public Task<decimal> GetTotalAsync(DateTime fromDate, DateTime toDate, CancellationToken cancellationToken = default) =>
+            Task.FromResult(SavedExpenses.Where(e => e.ExpenseDate >= fromDate.Date && e.ExpenseDate <= toDate.Date).Sum(e => e.Amount));
+
+        public Task<IReadOnlyList<CategoryExpenseTotalDto>> GetCategoryTotalsAsync(DateTime fromDate, DateTime toDate, CancellationToken cancellationToken = default)
+        {
+            var totals = SavedExpenses.Where(e => e.ExpenseDate >= fromDate.Date && e.ExpenseDate <= toDate.Date)
+                .GroupBy(e => new { e.CategoryId, Name = e.Category?.Name ?? string.Empty })
+                .Select(g => new CategoryExpenseTotalDto { CategoryId = g.Key.CategoryId, CategoryName = g.Key.Name, Total = g.Sum(e => e.Amount) })
+                .ToList();
+            return Task.FromResult<IReadOnlyList<CategoryExpenseTotalDto>>(totals);
+        }
+
+        public Task<IReadOnlyList<ExpenseListItemDto>> GetRecentAsync(int count, CancellationToken cancellationToken = default)
+        {
+            var recent = SavedExpenses.OrderByDescending(e => e.ExpenseDate).ThenByDescending(e => e.Id).Take(count)
+                .Select(e => new ExpenseListItemDto { Id = e.Id, ExpenseDate = e.ExpenseDate, Amount = e.Amount, CategoryId = e.CategoryId, CategoryName = e.Category?.Name ?? string.Empty, PaymentMethod = e.PaymentMethod, Description = e.Description }).ToList();
+            return Task.FromResult<IReadOnlyList<ExpenseListItemDto>>(recent);
         }
     }
 
@@ -293,5 +335,45 @@ public class ExpenseServiceTests
 
         // Assert
         Assert.Equal(2, list.Count);
+    }
+
+    [Fact]
+    public async Task DeleteExpenseAsync_WithExistingExpense_RemovesExpense()
+    {
+        // Arrange
+        var id = await _service.CreateExpenseAsync(new CreateExpenseRequest
+        {
+            ExpenseDate = DateTime.Today,
+            Amount = 150m,
+            CategoryId = 1,
+            PaymentMethod = PaymentMethod.Cash,
+            Description = "Snack"
+        });
+
+        // Act
+        await _service.DeleteExpenseAsync(id);
+
+        // Assert
+        var deleted = await _service.GetExpenseByIdAsync(id);
+        Assert.Null(deleted);
+        Assert.Empty(_expenseRepo.SavedExpenses);
+    }
+
+    [Fact]
+    public async Task DeleteExpenseAsync_WithNonexistentExpense_ThrowsValidationException()
+    {
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<ValidationException>(() => _service.DeleteExpenseAsync(9999));
+        Assert.Contains("Expense not found", ex.Message);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-5)]
+    public async Task DeleteExpenseAsync_WithInvalidId_ThrowsValidationException(int invalidId)
+    {
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<ValidationException>(() => _service.DeleteExpenseAsync(invalidId));
+        Assert.Contains("Invalid expense ID", ex.Message);
     }
 }

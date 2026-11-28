@@ -24,6 +24,79 @@
 <!-- Main Content -->
 <div class="app-content">
     <div class="container-fluid">
+        @if (!string.IsNullOrWhiteSpace(Model.FilterError))
+        {
+            <div class="alert alert-danger" role="alert">@Model.FilterError The current month is shown.</div>
+        }
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm h-100"><div class="card-body">
+                    <div class="text-muted small text-uppercase fw-semibold">Today's expense</div>
+                    <div class="fs-3 fw-bold text-primary">৳ @Model.Summary.TodayTotal.ToString("N2")</div>
+                    <div class="small text-muted">@DateTime.Today.ToString("MMMM d, yyyy")</div>
+                </div></div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm h-100"><div class="card-body">
+                    <div class="text-muted small text-uppercase fw-semibold">This month</div>
+                    <div class="fs-3 fw-bold text-success">৳ @Model.Summary.MonthTotal.ToString("N2")</div>
+                    <div class="small text-muted">@DateTime.Today.ToString("MMMM yyyy")</div>
+                </div></div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm h-100"><div class="card-body">
+                    <div class="text-muted small text-uppercase fw-semibold">Selected period</div>
+                    <div class="fs-3 fw-bold text-info">৳ @Model.Summary.SelectedPeriodTotal.ToString("N2")</div>
+                    <div class="small text-muted">@Model.Summary.FromDate.ToString("yyyy-MM-dd") – @Model.Summary.ToDate.ToString("yyyy-MM-dd")</div>
+                </div></div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-2 align-items-end">
+                    <div class="col-12 col-sm-4"><label asp-for="FromDate" class="form-label">Period from</label><input asp-for="FromDate" type="date" class="form-control" /></div>
+                    <div class="col-12 col-sm-4"><label asp-for="ToDate" class="form-label">Period to</label><input asp-for="ToDate" type="date" class="form-control" /></div>
+                    <div class="col-12 col-sm-4 d-flex gap-2"><button class="btn btn-primary" type="submit"><i class="bi bi-calendar-range me-1"></i>Update summary</button><a asp-page="/Index" class="btn btn-outline-secondary">This month</a></div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header fw-bold"><i class="bi bi-pie-chart me-2 text-primary"></i>Category totals</div>
+                    <div class="card-body p-0">
+                        @if (Model.Summary.CategoryTotals.Count == 0)
+                        { <p class="text-muted text-center p-4 mb-0">No expenses in this period.</p> }
+                        else
+                        {
+                            <div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead><tr><th class="ps-3">Category</th><th class="text-end pe-3">Total</th></tr></thead><tbody>
+                            @foreach (var item in Model.Summary.CategoryTotals)
+                            { <tr><td class="ps-3">@item.CategoryName</td><td class="text-end pe-3 fw-semibold">৳ @item.Total.ToString("N2")</td></tr> }
+                            </tbody></table></div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center"><span class="fw-bold"><i class="bi bi-clock-history me-2 text-primary"></i>Recent expenses</span><a asp-page="/Expenses/Index" class="btn btn-sm btn-outline-primary">All expenses</a></div>
+                    <div class="card-body p-0">
+                        @if (Model.Summary.RecentExpenses.Count == 0)
+                        { <p class="text-muted text-center p-4 mb-0">No expenses in this period.</p> }
+                        else
+                        {
+                            <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0"><thead><tr><th class="ps-3">Date</th><th>Category</th><th>Description</th><th class="text-end pe-3">Amount</th></tr></thead><tbody>
+                            @foreach (var expense in Model.Summary.RecentExpenses)
+                            { <tr><td class="ps-3 text-nowrap">@expense.ExpenseDate.ToString("yyyy-MM-dd")</td><td>@expense.CategoryName</td><td class="text-truncate" style="max-width:180px">@(string.IsNullOrWhiteSpace(expense.Description) ? "—" : expense.Description)</td><td class="text-end pe-3 fw-semibold text-nowrap">৳ @expense.Amount.ToString("N2")</td></tr> }
+                            </tbody></table></div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Stats / Action Boxes -->
         <div class="row g-3 mb-4">
             <div class="col-12 col-sm-6 col-md-4">
